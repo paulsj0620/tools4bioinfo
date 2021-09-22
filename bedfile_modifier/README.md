@@ -1,5 +1,5 @@
 [USAGE]
-python %s -i <Design_ID.Raw.bed> -o <Design_ID.Modified.bed>
+python bedfile_modifier.py -i <Design_ID.Raw.bed> -o <Design_ID.Modified.bed>
 
 [PARAMETER]
 -i, --input  : input bed file path
