@@ -1,0 +1,1 @@
+bamfile read counter
