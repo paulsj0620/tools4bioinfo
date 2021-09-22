@@ -1,0 +1,84 @@
+TN1910D4055 Heterozygosity : 1870
+TN1910D4055 Homozygosity : 115
+TN1910D4058 Heterozygosity : 1542
+TN1910D4058 Homozygosity : 179
+Common Heterozygosity : 35391 
+Common Homozygosity : 24414 
+******************************
+TN1910D4049 Heterozygosity : 1590
+TN1910D4049 Homozygosity : 159
+TN1910D4052 Heterozygosity : 1856
+TN1910D4052 Homozygosity : 127
+Common Heterozygosity : 35269 
+Common Homozygosity : 24403 
+******************************
+TN1910D4055 Heterozygosity : 1974
+TN1910D4055 Homozygosity : 125
+TN1910D4049 Heterozygosity : 1594
+TN1910D4049 Homozygosity : 177
+Common Heterozygosity : 35269 
+Common Homozygosity : 24362 
+******************************
+TN1910D4058 Heterozygosity : 1512
+TN1910D4058 Homozygosity : 157
+TN1910D4052 Heterozygosity : 1732
+TN1910D4052 Homozygosity : 114
+Common Heterozygosity : 35428 
+Common Homozygosity : 24443 
+******************************
+TN1910D4056 Heterozygosity : 1271
+TN1910D4056 Homozygosity : 141
+TN1910D4060 Heterozygosity : 1985
+TN1910D4060 Homozygosity : 125
+Common Heterozygosity : 35728 
+Common Homozygosity : 24333 
+******************************
+TN1910D4050 Heterozygosity : 1346
+TN1910D4050 Homozygosity : 153
+TN1910D4054 Heterozygosity : 1937
+TN1910D4054 Homozygosity : 132
+Common Heterozygosity : 35942 
+Common Homozygosity : 24352 
+******************************
+TN1910D4056 Heterozygosity : 1466
+TN1910D4056 Homozygosity : 204
+TN1910D4050 Heterozygosity : 1764
+TN1910D4050 Homozygosity : 159
+Common Heterozygosity : 35515 
+Common Homozygosity : 24267 
+******************************
+TN1910D4060 Heterozygosity : 1481
+TN1910D4060 Homozygosity : 142
+TN1910D4054 Heterozygosity : 1665
+TN1910D4054 Homozygosity : 92
+Common Heterozygosity : 36258 
+Common Homozygosity : 24421 
+******************************
+TN1910D4057 Heterozygosity : 1587
+TN1910D4057 Homozygosity : 122
+TN1910D4059 Heterozygosity : 1513
+TN1910D4059 Homozygosity : 143
+Common Heterozygosity : 36229 
+Common Homozygosity : 24170 
+******************************
+TN1910D4051 Heterozygosity : 2004
+TN1910D4051 Homozygosity : 187
+TN1910D4053 Heterozygosity : 1687
+TN1910D4053 Homozygosity : 155
+Common Heterozygosity : 35667 
+Common Homozygosity : 24017 
+******************************
+TN1910D4057 Heterozygosity : 1778
+TN1910D4057 Homozygosity : 159
+TN1910D4051 Heterozygosity : 1700
+TN1910D4051 Homozygosity : 149
+Common Heterozygosity : 36012 
+Common Homozygosity : 24104 
+******************************
+TN1910D4059 Heterozygosity : 1884
+TN1910D4059 Homozygosity : 176
+TN1910D4053 Heterozygosity : 1562
+TN1910D4053 Homozygosity : 131
+Common Heterozygosity : 35837 
+Common Homozygosity : 24079 
+******************************
