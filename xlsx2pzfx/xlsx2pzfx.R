@@ -90,6 +90,15 @@ cell <- function(m, r, c) {
 
 as_num <- function(x) suppressWarnings(as.numeric(x))
 
+# 셀 파싱: 값 뒤에 '*' 가 붙어 있으면 (예: "12.3*") Prism excluded value 로 표시
+parse_cell <- function(x) {
+  if (is.na(x)) return(list(value = NA_real_, excluded = FALSE))
+  s <- trimws(x)
+  excluded <- grepl("\\*\\s*$", s)
+  if (excluded) s <- trimws(sub("\\*+\\s*$", "", s))
+  list(value = as_num(s), excluded = excluded)
+}
+
 xml_escape <- function(s) {
   s <- gsub("&", "&amp;", s, fixed = TRUE)
   s <- gsub("<", "&lt;", s, fixed = TRUE)
@@ -106,7 +115,8 @@ fmt_num <- function(v) {
 
 # ---- 파싱 ------------------------------------------------------------------
 # 반환: list of block; block = list(name=, panels=list(pkey=grid))
-#       grid = list of rows; row = numeric length-5 (NA=빈칸)  ※ 위치 보존
+#       grid = list of rows; row = list(vals=numeric(5), excl=logical(5))
+#       (NA=빈칸, excl=TRUE 면 excluded value)  ※ 위치 보존
 parse_blocks <- function(m) {
   nrows <- nrow(m)
 
@@ -165,16 +175,20 @@ parse_blocks <- function(m) {
       grid <- list()
       if (data_start <= data_end) {
         for (r in data_start:data_end) {
-          row <- rep(NA_real_, GROUP_COUNT)
+          vals <- rep(NA_real_, GROUP_COUNT)
+          excl <- rep(FALSE, GROUP_COUNT)
           for (g in seq_len(GROUP_COUNT)) {
-            v <- as_num(cell(m, r, c0 + g - 1))
-            if (!is.na(v)) row[g] <- v * scale
+            pc <- parse_cell(cell(m, r, c0 + g - 1))
+            if (!is.na(pc$value)) {
+              vals[g] <- pc$value * scale
+              excl[g] <- pc$excluded
+            }
           }
-          grid[[length(grid) + 1]] <- row
+          grid[[length(grid) + 1]] <- list(vals = vals, excl = excl)
         }
       }
       # 아래쪽 완전 빈 행 제거 (내부 빈칸은 위치 보존)
-      while (length(grid) > 0 && all(is.na(grid[[length(grid)]]))) {
+      while (length(grid) > 0 && all(is.na(grid[[length(grid)]]$vals))) {
         grid[[length(grid)]] <- NULL
       }
       if (length(grid) > 0) panels[[pkey]] <- grid
@@ -184,9 +198,12 @@ parse_blocks <- function(m) {
   blocks
 }
 
+# g번째 그룹 열의 값/제외 플래그 (빈칸 제외, 위치 정렬 유지)
 col_values <- function(grid, g) {
-  vals <- vapply(grid, function(row) row[g], numeric(1))
-  vals[!is.na(vals)]
+  vals <- vapply(grid, function(row) row$vals[g], numeric(1))
+  excl <- vapply(grid, function(row) row$excl[g], logical(1))
+  keep <- !is.na(vals)
+  list(vals = vals[keep], excl = excl[keep])
 }
 
 # ---- .pzfx 생성 ------------------------------------------------------------
@@ -226,12 +243,15 @@ build_pzfx <- function(blocks) {
     o <- c(o, sprintf('<Table ID="Table%d" XFormat="none" YFormat="replicates" Replicates="1" TableType="OneWay" EVFormat="AsteriskAfterNumber">', i - 1))
     o <- c(o, sprintf("<Title>%s</Title>", xml_escape(tb$title)))
     for (g in seq_len(GROUP_COUNT)) {
-      vals <- col_values(tb$grid, g)
+      cv <- col_values(tb$grid, g)
       o <- c(o, sprintf('<YColumn Width="81" Decimals="%d" Subcolumns="1">', tb$decimals))
       o <- c(o, sprintf("<Title>%s</Title>", xml_escape(GROUP_TITLES[g])))
       o <- c(o, "<Subcolumn>")
-      if (length(vals) > 0) {
-        o <- c(o, vapply(vals, function(v) sprintf("<d>%s</d>", fmt_num(v)), character(1)))
+      if (length(cv$vals) > 0) {
+        o <- c(o, vapply(seq_along(cv$vals), function(k) {
+          if (cv$excl[k]) sprintf('<d Excluded="1">%s*</d>', fmt_num(cv$vals[k]))
+          else            sprintf("<d>%s</d>", fmt_num(cv$vals[k]))
+        }, character(1)))
       }
       o <- c(o, "</Subcolumn>", "</YColumn>")
     }
@@ -256,8 +276,11 @@ summary_text <- function(r) {
   lines <- c(sprintf("생성 완료: %s", r$out), "", sprintf("테이블 %d개:", length(r$tables)))
   for (i in seq_along(r$tables)) {
     tb <- r$tables[[i]]
-    ns <- vapply(seq_len(GROUP_COUNT), function(g) length(col_values(tb$grid, g)), integer(1))
-    lines <- c(lines, sprintf("  [%2d] %s  (n=%s)", i - 1, tb$title, paste(ns, collapse = ",")))
+    cvs <- lapply(seq_len(GROUP_COUNT), function(g) col_values(tb$grid, g))
+    ns <- vapply(cvs, function(cv) length(cv$vals), integer(1))
+    nex <- sum(vapply(cvs, function(cv) sum(cv$excl), integer(1)))
+    ex_note <- if (nex > 0) sprintf("  [제외 %d개]", nex) else ""
+    lines <- c(lines, sprintf("  [%2d] %s  (n=%s)%s", i - 1, tb$title, paste(ns, collapse = ","), ex_note))
   }
   if (length(r$skipped) > 0) lines <- c(lines, "", paste("건너뛴 블록(데이터 없음):", paste(r$skipped, collapse = ", ")))
   lines <- c(lines, "", "다음 단계: Prism에서 이 .pzfx 열기 → 그래프 세팅 → .prism 으로 저장")
